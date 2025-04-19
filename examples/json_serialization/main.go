@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Exemplo de Serialização JSON de Políticas ===")
+	fmt.Println("=== Policy JSON Serialization Example ===")
 
 	policyFactory := factory.NewPolicyFactory()
 
@@ -46,20 +46,20 @@ func main() {
 		adminStatement,
 	)
 
-	fmt.Println("\n=== Política para JSON ===")
+	fmt.Println("\n=== Policy to JSON ===")
 	readPolicyJSON, err := readPolicy.ToJSONIndent()
 	if err != nil {
-		fmt.Printf("Erro ao converter política para JSON: %v\n", err)
+		fmt.Printf("Error converting policy to JSON: %v\n", err)
 		return
 	}
 	fmt.Println(readPolicyJSON)
 
-	fmt.Println("\n=== JSON para Política ===")
+	fmt.Println("\n=== JSON to Policy ===")
 	jsonStr := `{
 		"version": "2023-01-01",
 		"id": "p-custom-001",
 		"name": "CustomPolicy",
-		"description": "Política criada a partir de JSON",
+		"description": "Policy created from JSON",
 		"statements": [
 			{
 				"id": "s-1",
@@ -73,27 +73,27 @@ func main() {
 
 	customPolicy, err := policy.FromJSON(jsonStr)
 	if err != nil {
-		fmt.Printf("Erro ao converter JSON para política: %v\n", err)
+		fmt.Printf("Error converting JSON to policy: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Política carregada do JSON:\n")
+	fmt.Printf("Policy loaded from JSON:\n")
 	fmt.Printf("  ID: %s\n", customPolicy.ID)
-	fmt.Printf("  Nome: %s\n", customPolicy.Name)
-	fmt.Printf("  Descrição: %s\n", customPolicy.Description)
+	fmt.Printf("  Name: %s\n", customPolicy.Name)
+	fmt.Printf("  Description: %s\n", customPolicy.Description)
 	fmt.Printf("  Statements: %d\n", len(customPolicy.Statements))
-	fmt.Printf("  Criada em: %s\n", customPolicy.CreatedAt.Format(time.RFC3339))
+	fmt.Printf("  Created at: %s\n", customPolicy.CreatedAt.Format(time.RFC3339))
 
-	fmt.Println("\n=== Lista de Políticas para JSON ===")
+	fmt.Println("\n=== Policy List to JSON ===")
 	policies := []policy.Policy{readPolicy, adminPolicy, customPolicy}
 	policiesJSON, err := policy.ToJSONListIndent(policies)
 	if err != nil {
-		fmt.Printf("Erro ao converter lista de políticas para JSON: %v\n", err)
+		fmt.Printf("Error converting policy list to JSON: %v\n", err)
 		return
 	}
 	fmt.Println(policiesJSON)
 
-	fmt.Println("\n=== JSON para Lista de Políticas ===")
+	fmt.Println("\n=== JSON to Policy List ===")
 	jsonListStr := `{
 		"policies": [
 			{
@@ -129,25 +129,25 @@ func main() {
 
 	jsonPolicies, err := policy.FromJSONList(jsonListStr)
 	if err != nil {
-		fmt.Printf("Erro ao converter JSON para lista de políticas: %v\n", err)
+		fmt.Printf("Error converting JSON to policy list: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Políticas carregadas do JSON: %d\n", len(jsonPolicies))
+	fmt.Printf("Policies loaded from JSON: %d\n", len(jsonPolicies))
 	for i, p := range jsonPolicies {
-		fmt.Printf("  Política %d: %s (%s)\n", i+1, p.Name, p.ID)
+		fmt.Printf("  Policy %d: %s (%s)\n", i+1, p.Name, p.ID)
 	}
 
-	fmt.Println("\n=== Demonstração: Workflow de Carregamento de Políticas ===")
-	fmt.Println("1. Carregar políticas de um arquivo JSON (simulado)")
-	fmt.Println("2. Validar cada política antes de usar")
-	fmt.Println("3. Criar um avaliador com as políticas carregadas")
+	fmt.Println("\n=== Demonstration: Policy Loading Workflow ===")
+	fmt.Println("1. Load policies from a JSON file (simulated)")
+	fmt.Println("2. Validate each policy before using")
+	fmt.Println("3. Create an evaluator with the loaded policies")
 
 	jsonContent := jsonListStr
 
 	loadedPolicies, err := policy.FromJSONList(jsonContent)
 	if err != nil {
-		fmt.Printf("Erro ao carregar políticas: %v\n", err)
+		fmt.Printf("Error loading policies: %v\n", err)
 		return
 	}
 
@@ -158,7 +158,7 @@ func main() {
 	for i, p := range loadedPolicies {
 		errors := validator.Validate(p)
 		if len(errors) > 0 {
-			fmt.Printf("Política %d (%s) inválida:\n", i+1, p.ID)
+			fmt.Printf("Policy %d (%s) invalid:\n", i+1, p.ID)
 			for _, err := range errors {
 				fmt.Printf("  - %s: %s\n", err.Field, err.Message)
 			}
@@ -167,12 +167,12 @@ func main() {
 		validPolicies = append(validPolicies, p)
 	}
 
-	fmt.Printf("Políticas válidas: %d/%d\n", len(validPolicies), len(loadedPolicies))
+	fmt.Printf("Valid policies: %d/%d\n", len(validPolicies), len(loadedPolicies))
 
 	evaluatorFactory := factory.NewEvaluatorFactory()
 	eval := evaluatorFactory.CreatePolicyEvaluator(validPolicies...)
 
-	fmt.Println("Avaliador criado com sucesso com as políticas carregadas do JSON!")
+	fmt.Println("Evaluator successfully created with policies loaded from JSON!")
 
 	request := evaluator.Request{
 		Principal: "user-123",
@@ -184,5 +184,5 @@ func main() {
 	}
 
 	result := eval.Evaluate(request)
-	fmt.Printf("Avaliação de acesso: %v (%s)\n", result.Allowed, result.Reason)
+	fmt.Printf("Access evaluation: %v (%s)\n", result.Allowed, result.Reason)
 }
