@@ -34,7 +34,6 @@ Thumbs.db
 
 # Build and Dependency Management
 bin/
-pkg/
 _build/
 _obj/
 
