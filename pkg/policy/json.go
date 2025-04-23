@@ -64,6 +64,12 @@ func FromJSON(jsonStr string) (Policy, error) {
 	return p, err
 }
 
+func FromJSONArray(jsonStr string) ([]Policy, error) {
+	var p []Policy
+	err := json.Unmarshal([]byte(jsonStr), &p)
+	return p, err
+}
+
 func (p Policy) ToJSON() (string, error) {
 	bytes, err := json.Marshal(p)
 	if err != nil {
